@@ -1,0 +1,3860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+
+<title>Cr Power | Handwriting Notes Digitizer</title>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#f5f7fb;
+    color:#172033;
+}
+
+:root{
+    --primary:#2563eb;
+    --secondary:#4f46e5;
+    --dark:#172033;
+    --muted:#667085;
+    --border:#e4e7ec;
+    --green:#16a34a;
+    --red:#dc2626;
+    --light:#eef4ff;
+}
+
+button,input,textarea,select{
+    font-family:inherit;
+}
+
+/* ================= AUTH ================= */
+
+#authPage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:
+        radial-gradient(circle at top right,#dce8ff,transparent 35%),
+        radial-gradient(circle at bottom left,#e5e7ff,transparent 35%),
+        #f5f7fb;
+}
+
+.auth-container{
+    width:100%;
+    max-width:460px;
+}
+
+.auth-brand{
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.auth-logo{
+    width:72px;
+    height:72px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:20px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-size:36px;
+    box-shadow:0 15px 35px #2563eb35;
+}
+
+.auth-brand h1{
+    margin-top:15px;
+    font-size:28px;
+}
+
+.auth-brand p{
+    color:var(--muted);
+    margin-top:7px;
+}
+
+.auth-card{
+    background:white;
+    border-radius:22px;
+    padding:30px;
+    box-shadow:0 15px 50px #00000010;
+}
+
+.auth-card h2{
+    font-size:25px;
+    margin-bottom:7px;
+}
+
+.auth-subtitle{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:25px;
+}
+
+.form-group{
+    margin-bottom:17px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.form-group input{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+    font-size:14px;
+    transition:.2s;
+}
+
+.form-group input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px #2563eb15;
+}
+
+.auth-btn{
+    width:100%;
+    border:none;
+    padding:14px;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:5px;
+}
+
+.auth-btn:hover{
+    opacity:.93;
+}
+
+.auth-switch{
+    text-align:center;
+    margin-top:20px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.auth-switch button{
+    border:none;
+    background:none;
+    color:var(--primary);
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.auth-message{
+    display:none;
+    padding:11px;
+    border-radius:9px;
+    margin-bottom:16px;
+    font-size:13px;
+}
+
+.auth-message.error{
+    display:block;
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.auth-message.success{
+    display:block;
+    background:#dcfce7;
+    color:#166534;
+}
+
+.password-note{
+    color:#98a2b3;
+    font-size:11px;
+    margin-top:5px;
+}
+
+/* ================= APP ================= */
+
+#app{
+    display:none;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar{
+    height:70px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+}
+
+.logo{
+    color:white;
+    text-decoration:none;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.nav-user{
+    font-size:13px;
+    opacity:.95;
+}
+
+.logout-btn{
+    border:1px solid #ffffff55;
+    background:#ffffff18;
+    color:white;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.nav-links{
+    display:flex;
+    gap:24px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.menu-btn{
+    display:none;
+    font-size:26px;
+    cursor:pointer;
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    min-height:500px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:70px 20px;
+    background:
+        radial-gradient(circle at top right,#dce8ff,transparent 35%),
+        #f5f7fb;
+}
+
+.badge{
+    display:inline-block;
+    padding:9px 16px;
+    margin-bottom:20px;
+    border-radius:30px;
+    background:#e8efff;
+    color:var(--primary);
+    font-size:13px;
+    font-weight:bold;
+}
+
+.hero h1{
+    max-width:900px;
+    margin:auto auto 20px;
+    font-size:50px;
+    line-height:1.15;
+}
+
+.hero h1 span{
+    color:var(--primary);
+}
+
+.hero p{
+    max-width:720px;
+    margin:auto;
+    color:var(--muted);
+    font-size:17px;
+    line-height:1.7;
+}
+
+.hero-buttons{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:30px;
+    flex-wrap:wrap;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn{
+    border:none;
+    padding:13px 22px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:white;
+}
+
+.btn-secondary{
+    background:white;
+    color:var(--primary);
+    border:1px solid var(--border);
+}
+
+/* ================= SECTIONS ================= */
+
+section{
+    padding:70px 7%;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.section-title h2{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.section-title p{
+    color:var(--muted);
+}
+
+/* ================= DIGITIZER ================= */
+
+.workspace{
+    max-width:1150px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 7px 25px rgba(0,0,0,.06);
+}
+
+.card h3{
+    margin-bottom:18px;
+}
+
+/* ================= UPLOAD ================= */
+
+.upload-box{
+    display:block;
+    border:2px dashed #9db8f5;
+    border-radius:15px;
+    padding:40px 20px;
+    text-align:center;
+    background:#f8faff;
+    cursor:pointer;
+}
+
+.upload-box:hover{
+    background:#eef4ff;
+}
+
+.upload-icon{
+    font-size:55px;
+    margin-bottom:12px;
+}
+
+.upload-box p{
+    color:var(--muted);
+    margin:10px 0 18px;
+}
+
+.choose-btn{
+    display:inline-block;
+    padding:12px 20px;
+    border-radius:8px;
+    background:var(--primary);
+    color:white;
+    font-weight:bold;
+}
+
+#fileInput{
+    display:none;
+}
+
+.preview{
+    display:none;
+    margin-top:20px;
+    text-align:center;
+}
+
+.preview img{
+    width:100%;
+    max-height:350px;
+    object-fit:contain;
+    border-radius:12px;
+    border:1px solid var(--border);
+}
+
+/* ================= EXTRACT ================= */
+
+.extract-btn{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.extract-btn:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+/* ================= STATUS ================= */
+
+.status{
+    display:none;
+    padding:13px;
+    margin-bottom:15px;
+    border-radius:9px;
+    background:#eef4ff;
+    color:var(--primary);
+    text-align:center;
+    font-size:14px;
+}
+
+/* ================= SUBJECT ================= */
+
+.detect{
+    display:none;
+    padding:14px;
+    margin-bottom:15px;
+    border-radius:10px;
+    background:#f0fdf4;
+    border:1px solid #bbf7d0;
+}
+
+.subject-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.subject-row select{
+    padding:7px;
+    border-radius:6px;
+    border:1px solid var(--border);
+}
+
+.tags{
+    margin-top:10px;
+}
+
+.tag{
+    display:inline-block;
+    padding:4px 10px;
+    margin:4px;
+    border-radius:15px;
+    background:#eef2ff;
+    color:#3730a3;
+    font-size:12px;
+}
+
+.tag.subject{
+    background:#dcfce7;
+    color:#166534;
+    font-weight:bold;
+}
+
+/* ================= TEXT ================= */
+
+#result{
+    width:100%;
+    min-height:350px;
+    padding:15px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    resize:vertical;
+    outline:none;
+    line-height:1.6;
+    font-size:14px;
+}
+
+#result:focus{
+    border-color:var(--primary);
+}
+
+/* ================= ACTIONS ================= */
+
+.actions{
+    display:flex;
+    gap:9px;
+    margin-top:15px;
+    flex-wrap:wrap;
+}
+
+.action-btn{
+    flex:1;
+    min-width:90px;
+    border:none;
+    padding:11px;
+    border-radius:8px;
+    cursor:pointer;
+    background:#eef2ff;
+    color:#3730a3;
+    font-weight:bold;
+}
+
+.action-btn.save{
+    background:var(--green);
+    color:white;
+}
+
+.action-btn.delete{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+/* ================= NOTES ================= */
+
+.notes-grid{
+    max-width:1100px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.note{
+    background:white;
+    padding:22px;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+    display:flex;
+    flex-direction:column;
+}
+
+.note-icon{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.note h3{
+    margin-bottom:8px;
+}
+
+.note-text{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+    flex:1;
+}
+
+.note-date{
+    color:#98a2b3;
+    font-size:12px;
+    margin-top:12px;
+}
+
+.note-actions{
+    display:flex;
+    gap:7px;
+    margin-top:14px;
+}
+
+.note-actions button{
+    flex:1;
+    border:none;
+    padding:8px;
+    border-radius:7px;
+    cursor:pointer;
+    background:#eef2ff;
+    color:#3730a3;
+}
+
+.note-actions .danger{
+    flex:0 0 auto;
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.empty{
+    grid-column:1/-1;
+    background:white;
+    padding:40px;
+    border-radius:15px;
+    text-align:center;
+    color:var(--muted);
+    line-height:1.8;
+}
+
+/* ================= FEATURES ================= */
+
+.features-grid{
+    max-width:1100px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+}
+
+.feature{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+.feature-icon{
+    font-size:35px;
+    margin-bottom:12px;
+}
+
+.feature h3{
+    margin-bottom:8px;
+}
+
+.feature p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+}
+
+/* ================= ABOUT ================= */
+
+.about{
+    max-width:1050px;
+    margin:auto;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
+
+.about p{
+    color:var(--muted);
+    line-height:1.8;
+    margin-bottom:14px;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    background:var(--dark);
+    color:#b8c0d0;
+    padding:35px 7%;
+    text-align:center;
+    font-size:14px;
+}
+
+/* ================= TOAST ================= */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translateX(-50%) translateY(80px);
+    opacity:0;
+    background:#111827;
+    color:white;
+    padding:12px 20px;
+    border-radius:10px;
+    z-index:3000;
+    transition:.3s;
+    max-width:90%;
+    text-align:center;
+}
+
+#toast.show{
+    transform:translateX(-50%) translateY(0);
+    opacity:1;
+}
+
+/* ================= CHAT ================= */
+
+#chatButton{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    width:60px;
+    height:60px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    font-size:27px;
+    cursor:pointer;
+    box-shadow:0 8px 30px #0004;
+    z-index:2000;
+}
+
+#chatWindow{
+    display:none;
+    position:fixed;
+    right:18px;
+    bottom:90px;
+    width:min(420px,94vw);
+    height:min(580px,78vh);
+    background:white;
+    border-radius:20px;
+    box-shadow:0 20px 60px #0005;
+    overflow:hidden;
+    z-index:2000;
+    flex-direction:column;
+}
+
+#chatWindow.open{
+    display:flex;
+}
+
+.chat-header{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    padding:15px 18px;
+    display:flex;
+    align-items:center;
+    font-weight:bold;
+}
+
+.chat-header small{
+    display:block;
+    font-size:10px;
+    opacity:.8;
+    margin-top:3px;
+}
+
+.chat-close{
+    margin-left:auto;
+    font-size:24px;
+    cursor:pointer;
+}
+
+#chatMessages{
+    flex:1;
+    overflow-y:auto;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.message{
+    max-width:88%;
+    padding:10px 13px;
+    border-radius:14px;
+    background:#eef2ff;
+    line-height:1.5;
+    font-size:14px;
+    white-space:pre-line;
+}
+
+.message.user{
+    align-self:flex-end;
+    background:var(--primary);
+    color:white;
+}
+
+.quick{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    padding:8px 10px;
+    border-top:1px solid var(--border);
+}
+
+.quick button{
+    white-space:nowrap;
+    border:none;
+    background:#e8efff;
+    color:var(--primary);
+    padding:7px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.chat-input{
+    display:flex;
+    gap:7px;
+    padding:10px;
+    border-top:1px solid var(--border);
+}
+
+.chat-input input{
+    flex:1;
+    padding:11px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    outline:none;
+}
+
+.chat-input button{
+    border:none;
+    background:var(--primary);
+    color:white;
+    padding:0 15px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+    .nav-user{
+        display:none;
+    }
+
+    .features-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:900px){
+
+    .nav-links{
+        display:none;
+    }
+
+    .menu-btn{
+        display:block;
+    }
+
+    .nav-links.open{
+        display:flex;
+        flex-direction:column;
+        position:absolute;
+        top:70px;
+        right:0;
+        width:240px;
+        padding:20px;
+        background:var(--primary);
+    }
+
+    .workspace{
+        grid-template-columns:1fr;
+    }
+
+    .notes-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:550px){
+
+    section{
+        padding:50px 5%;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .notes-grid,
+    .features-grid{
+        grid-template-columns:1fr;
+    }
+
+    .navbar{
+        padding:0 4%;
+    }
+
+    .logo{
+        font-size:20px;
+    }
+
+    .auth-card{
+        padding:24px;
+    }
+
+    #chatWindow{
+        right:8px;
+        width:calc(100vw - 16px);
+        height:75vh;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     AUTHENTICATION
+===================================================== -->
+
+<div id="authPage">
+
+    <div class="auth-container">
+
+        <div class="auth-brand">
+
+            <div class="auth-logo">
+                📒
+            </div>
+
+            <h1>Cr Power</h1>
+
+            <p>
+                Handwriting Notes Digitizer
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <div class="auth-card" id="loginCard">
+
+            <h2>Welcome Back 👋</h2>
+
+            <p class="auth-subtitle">
+                Login to access your digital notes.
+            </p>
+
+            <div id="loginMessage"
+                 class="auth-message">
+            </div>
+
+            <form onsubmit="loginUser(event)">
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        id="loginEmail"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="auth-btn">
+
+                    🔐 Login
+
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+
+                Don't have an account?
+
+                <button
+                    type="button"
+                    onclick="showRegister()">
+
+                    Create Account
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- REGISTER -->
+
+        <div class="auth-card"
+             id="registerCard"
+             style="display:none">
+
+            <h2>Create Account 🚀</h2>
+
+            <p class="auth-subtitle">
+                Register to start digitizing your notes.
+            </p>
+
+            <div id="registerMessage"
+                 class="auth-message">
+            </div>
+
+            <form onsubmit="registerUser(event)">
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        id="registerName"
+                        type="text"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        id="registerEmail"
+                        type="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        id="registerPassword"
+                        type="password"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                        minlength="4"
+                        required>
+
+                    <div class="password-note">
+                        Minimum 4 characters.
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Confirm Password
+                    </label>
+
+                    <input
+                        id="registerConfirm"
+                        type="password"
+                        placeholder="Confirm your password"
+                        autocomplete="new-password"
+                        required>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="auth-btn">
+
+                    ✅ Create Account
+
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+
+                Already have an account?
+
+                <button
+                    type="button"
+                    onclick="showLogin()">
+
+                    Login
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN APPLICATION
+===================================================== -->
+
+<div id="app">
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <a href="#home"
+       class="logo">
+
+        📒 Cr Power
+
+    </a>
+
+
+    <div class="nav-links"
+         id="navLinks">
+
+        <a href="#home">
+            Home
+        </a>
+
+        <a href="#digitizer">
+            Digitizer
+        </a>
+
+        <a href="#notes">
+            My Notes
+        </a>
+
+        <a href="#features">
+            Features
+        </a>
+
+        <a href="#about">
+            About
+        </a>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <span
+            class="nav-user"
+            id="navUser">
+        </span>
+
+        <button
+            class="logout-btn"
+            onclick="logoutUser()">
+
+            Logout
+
+        </button>
+
+        <div
+            class="menu-btn"
+            onclick="toggleMenu()">
+
+            ☰
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero"
+         id="home">
+
+    <div>
+
+        <div class="badge">
+
+            AI-Powered Handwriting Digitizer
+
+        </div>
+
+        <h1>
+
+            Convert
+            <span>
+                Handwritten Notes
+            </span>
+            Into Digital Text
+
+        </h1>
+
+        <p>
+
+            Upload a handwritten academic note,
+            extract the text using browser OCR,
+            organize it by subject and save it digitally.
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a
+                href="#digitizer"
+                class="btn btn-primary">
+
+                🚀 Start Digitizing
+
+            </a>
+
+
+            <button
+                class="btn btn-secondary"
+                onclick="toggleChat()">
+
+                💬 Vishnu Force
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DIGITIZER ================= -->
+
+<section id="digitizer">
+
+    <div class="section-title">
+
+        <h2>
+            📝 Handwriting Digitizer
+        </h2>
+
+        <p>
+            Upload your handwritten note and extract the text.
+        </p>
+
+    </div>
+
+
+    <div class="workspace">
+
+        <!-- UPLOAD -->
+
+        <div class="card">
+
+            <h3>
+                📷 Upload Handwritten Note
+            </h3>
+
+
+            <label
+                class="upload-box"
+                for="fileInput">
+
+                <div class="upload-icon">
+                    📄
+                </div>
+
+                <strong>
+                    Select your handwritten image
+                </strong>
+
+                <p>
+                    JPG, PNG or JPEG
+                </p>
+
+                <span class="choose-btn">
+                    Choose Image
+                </span>
+
+            </label>
+
+
+            <input
+                type="file"
+                id="fileInput"
+                accept="image/*">
+
+
+            <div
+                class="preview"
+                id="preview">
+
+                <img
+                    id="previewImage"
+                    alt="Uploaded handwritten note">
+
+            </div>
+
+
+            <button
+                class="extract-btn"
+                id="extractBtn"
+                onclick="extractText()">
+
+                🔍 Extract Text
+
+            </button>
+
+
+            <p
+                style="
+                font-size:12px;
+                color:#98a2b3;
+                margin-top:10px;
+                text-align:center;">
+
+                OCR runs directly in your browser.
+                No API key is required.
+
+            </p>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div class="card">
+
+            <h3>
+                💻 Digital Notes
+            </h3>
+
+
+            <div
+                class="status"
+                id="status">
+            </div>
+
+
+            <div
+                class="detect"
+                id="detect">
+
+                <div class="subject-row">
+
+                    <strong>
+                        📂 Subject:
+                    </strong>
+
+                    <select
+                        id="subjectSelect"
+                        onchange="changeSubject()">
+                    </select>
+
+                </div>
+
+
+                <div
+                    class="tags"
+                    id="topicTags">
+                </div>
+
+            </div>
+
+
+            <textarea
+                id="result"
+                placeholder="Extracted text will appear here...">
+            </textarea>
+
+
+            <div class="actions">
+
+                <button
+                    class="action-btn save"
+                    onclick="saveNote()">
+
+                    💾 Save
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="copyText()">
+
+                    📋 Copy
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="downloadText()">
+
+                    📥 TXT
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="downloadJSON()">
+
+                    📦 JSON
+
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="speakText()">
+
+                    🔊 Listen
+
+                </button>
+
+
+                <button
+                    class="action-btn delete"
+                    onclick="clearEditor()">
+
+                    🗑️ Clear
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= MY NOTES ================= -->
+
+<section id="notes">
+
+    <div class="section-title">
+
+        <h2>
+            📚 My Notes
+        </h2>
+
+        <p>
+            Your notes are stored locally in this browser.
+        </p>
+
+    </div>
+
+
+    <div
+        class="notes-grid"
+        id="notesGrid">
+    </div>
+
+</section>
+
+
+<!-- ================= FEATURES ================= -->
+
+<section id="features">
+
+    <div class="section-title">
+
+        <h2>
+            ✨ Features
+        </h2>
+
+        <p>
+            Simple tools for digitizing and studying notes.
+        </p>
+
+    </div>
+
+
+    <div class="features-grid">
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📷
+            </div>
+
+            <h3>
+                Image Upload
+            </h3>
+
+            <p>
+                Upload handwritten academic notes
+                from your phone or computer.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔍
+            </div>
+
+            <h3>
+                OCR Extraction
+            </h3>
+
+            <p>
+                Extract text from uploaded images
+                using browser OCR.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🗂️
+            </div>
+
+            <h3>
+                Subject Detection
+            </h3>
+
+            <p>
+                Detect common academic subjects
+                from extracted keywords.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                💾
+            </div>
+
+            <h3>
+                Local Storage
+            </h3>
+
+            <p>
+                Save notes locally without requiring
+                a database.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📦
+            </div>
+
+            <h3>
+                JSON Export
+            </h3>
+
+            <p>
+                Download saved notes as JSON.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔊
+            </div>
+
+            <h3>
+                Text To Speech
+            </h3>
+
+            <p>
+                Listen to extracted notes using
+                your device's speech system.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                💬
+            </div>
+
+            <h3>
+                Basic AI Chatbot
+            </h3>
+
+            <p>
+                Ask questions about NoteAI,
+                OCR and saved notes.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔐
+            </div>
+
+            <h3>
+                User Login
+            </h3>
+
+            <p>
+                Register and login before accessing
+                your personal notes.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section id="about">
+
+    <div class="section-title">
+
+        <h2>
+            ℹ️ About Cr Power
+        </h2>
+
+    </div>
+
+
+    <div class="about">
+
+        <p>
+            <b>Cr Power</b> is a handwriting notes
+            digitization platform designed for students.
+        </p>
+
+        <p>
+            Students can create an account, log in,
+            upload handwritten notes, extract written
+            content using OCR, edit the extracted text
+            and organize it.
+        </p>
+
+        <p>
+            Notes are stored locally in the browser.
+            Each registered user has a separate notes
+            collection.
+        </p>
+
+        <p>
+            The platform also provides subject detection,
+            topic detection, TXT/JSON export,
+            text-to-speech and an offline chatbot.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    © 2026 Cr Power |
+    AI Handwriting Notes Digitizer
+
+</footer>
+
+
+<!-- ================= CHAT BUTTON ================= -->
+
+<button
+    id="chatButton"
+    onclick="toggleChat()">
+
+    💬
+
+</button>
+
+
+<!-- ================= CHAT WINDOW ================= -->
+
+<div id="chatWindow">
+
+    <div class="chat-header">
+
+        <div>
+
+            💬 NoteAI Chat
+
+            <small>
+                Offline Basic Assistant
+            </small>
+
+        </div>
+
+        <span
+            class="chat-close"
+            onclick="toggleChat()">
+
+            ×
+
+        </span>
+
+    </div>
+
+
+    <div id="chatMessages">
+    </div>
+
+
+    <div class="quick">
+
+        <button
+            onclick="quickQuestion('What is NoteAI?')">
+
+            What is NoteAI?
+
+        </button>
+
+        <button
+            onclick="quickQuestion('What is OCR?')">
+
+            What is OCR?
+
+        </button>
+
+        <button
+            onclick="quickQuestion('How many notes do I have?')">
+
+            My Notes
+
+        </button>
+
+        <button
+            onclick="quickQuestion('What subjects do I have?')">
+
+            Subjects
+
+        </button>
+
+    </div>
+
+
+    <div class="chat-input">
+
+        <input
+            id="chatInput"
+            type="text"
+            placeholder="Ask something..."
+            onkeydown="
+            if(event.key==='Enter'){
+                sendChat();
+            }">
+
+        <button
+            onclick="sendChat()">
+
+            Send
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function $(id){
+    return document.getElementById(id);
+}
+
+
+function showToast(message){
+
+    var toast=$("toast");
+
+    toast.textContent=message;
+
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer=setTimeout(function(){
+        toast.classList.remove("show");
+    },2500);
+}
+
+
+function escapeHTML(text){
+
+    return String(text).replace(
+        /[&<>"']/g,
+        function(c){
+            return {
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#39;"
+            }[c];
+        }
+    );
+}
+
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+var currentUser=null;
+
+
+/*
+   Registered users are stored here.
+
+   Format:
+
+   noteai_users = [
+      {
+         name:"Vishnu",
+         email:"vishnu@gmail.com",
+         password:"1234"
+      }
+   ]
+*/
+
+function getUsers(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem("noteai_users") || "[]"
+        );
+
+    }catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+function saveUsers(users){
+
+    localStorage.setItem(
+        "noteai_users",
+        JSON.stringify(users)
+    );
+
+}
+
+
+/* ================= SHOW LOGIN ================= */
+
+function showLogin(){
+
+    $("loginCard").style.display="block";
+    $("registerCard").style.display="none";
+
+    clearAuthMessages();
+
+}
+
+
+/* ================= SHOW REGISTER ================= */
+
+function showRegister(){
+
+    $("loginCard").style.display="none";
+    $("registerCard").style.display="block";
+
+    clearAuthMessages();
+
+}
+
+
+/* ================= AUTH MESSAGES ================= */
+
+function clearAuthMessages(){
+
+    $("loginMessage").className="auth-message";
+    $("loginMessage").textContent="";
+
+    $("registerMessage").className="auth-message";
+    $("registerMessage").textContent="";
+
+}
+
+
+function authMessage(id,message,type){
+
+    var box=$(id);
+
+    box.textContent=message;
+
+    box.className=
+        "auth-message "+type;
+
+}
+
+
+/* ================= REGISTER ================= */
+
+function registerUser(event){
+
+    event.preventDefault();
+
+    var name=
+        $("registerName")
+        .value
+        .trim();
+
+    var email=
+        $("registerEmail")
+        .value
+        .trim()
+        .toLowerCase();
+
+    var password=
+        $("registerPassword")
+        .value;
+
+    var confirmPassword=
+        $("registerConfirm")
+        .value;
+
+
+    if(name.length<2){
+
+        authMessage(
+            "registerMessage",
+            "Please enter your full name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(password.length<4){
+
+        authMessage(
+            "registerMessage",
+            "Password must contain at least 4 characters.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(password!==confirmPassword){
+
+        authMessage(
+            "registerMessage",
+            "Passwords do not match.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    var users=getUsers();
+
+
+    var existing=
+        users.find(function(user){
+
+            return user.email===email;
+
+        });
+
+
+    if(existing){
+
+        authMessage(
+            "registerMessage",
+            "An account with this email already exists.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    var newUser={
+
+        id:Date.now(),
+
+        name:name,
+
+        email:email,
+
+        password:password
+
+    };
+
+
+    users.push(newUser);
+
+    saveUsers(users);
+
+
+    $("registerName").value="";
+    $("registerEmail").value="";
+    $("registerPassword").value="";
+    $("registerConfirm").value="";
+
+
+    showLogin();
+
+
+    $("loginEmail").value=email;
+
+    authMessage(
+        "loginMessage",
+        "✅ Account created successfully. You can now login.",
+        "success"
+    );
+
+}
+
+
+/* ================= LOGIN ================= */
+
+function loginUser(event){
+
+    event.preventDefault();
+
+
+    var email=
+        $("loginEmail")
+        .value
+        .trim()
+        .toLowerCase();
+
+    var password=
+        $("loginPassword")
+        .value;
+
+
+    var users=getUsers();
+
+
+    var user=
+        users.find(function(item){
+
+            return(
+                item.email===email &&
+                item.password===password
+            );
+
+        });
+
+
+    if(!user){
+
+        authMessage(
+            "loginMessage",
+            "❌ Invalid email or password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    currentUser=user;
+
+
+    localStorage.setItem(
+        "noteai_session",
+        user.email
+    );
+
+
+    $("loginPassword").value="";
+
+
+    openApplication();
+
+}
+
+
+/* ================= SESSION ================= */
+
+function checkSession(){
+
+    var email=
+        localStorage.getItem(
+            "noteai_session"
+        );
+
+
+    if(!email){
+        return;
+    }
+
+
+    var users=getUsers();
+
+
+    var user=
+        users.find(function(item){
+
+            return item.email===email;
+
+        });
+
+
+    if(user){
+
+        currentUser=user;
+
+        openApplication();
+
+    }else{
+
+        localStorage.removeItem(
+            "noteai_session"
+        );
+
+    }
+
+}
+
+
+/* ================= OPEN APP ================= */
+
+function openApplication(){
+
+    $("authPage").style.display="none";
+
+    $("app").style.display="block";
+
+
+    $("navUser").textContent=
+        "👤 "+currentUser.name;
+
+
+    loadUserNotes();
+
+    renderNotes();
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+function logoutUser(){
+
+    if(
+        !confirm(
+            "Are you sure you want to logout?"
+        )
+    ){
+        return;
+    }
+
+
+    localStorage.removeItem(
+        "noteai_session"
+    );
+
+
+    currentUser=null;
+
+    $("app").style.display="none";
+
+    $("authPage").style.display="flex";
+
+    showLogin();
+
+    $("loginEmail").value="";
+
+    showToast("Logged out successfully.");
+
+}
+
+
+/* =========================================================
+   USER-SPECIFIC NOTES
+========================================================= */
+
+var notes=[];
+
+var currentSubject="General";
+
+
+function notesKey(){
+
+    if(!currentUser){
+        return "noteai_notes_guest";
+    }
+
+    return(
+        "noteai_notes_"+
+        currentUser.email
+    );
+
+}
+
+
+function loadUserNotes(){
+
+    try{
+
+        notes=JSON.parse(
+            localStorage.getItem(
+                notesKey()
+            ) || "[]"
+        );
+
+    }catch(error){
+
+        notes=[];
+
+    }
+
+}
+
+
+function saveDatabase(){
+
+    if(!currentUser){
+        return;
+    }
+
+
+    try{
+
+        localStorage.setItem(
+            notesKey(),
+            JSON.stringify(notes)
+        );
+
+    }catch(error){
+
+        showToast(
+            "Unable to save notes."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function toggleMenu(){
+
+    $("navLinks")
+        .classList
+        .toggle("open");
+
+}
+
+
+/* =========================================================
+   SUBJECT DATA
+========================================================= */
+
+var subjects={
+
+    "Mathematics":
+    "equation algebra calculus theorem integral derivative matrix geometry probability function triangle angle formula",
+
+    "Physics":
+    "force velocity energy momentum newton gravity wave current voltage electric magnetic acceleration",
+
+    "Chemistry":
+    "atom molecule reaction acid base compound element bond periodic electron solution mole organic",
+
+    "Biology":
+    "cell dna gene protein organism evolution enzyme photosynthesis tissue species genetics bacteria",
+
+    "Computer Science":
+    "algorithm python java program code data database network software function loop variable machine learning artificial intelligence",
+
+    "History":
+    "war empire revolution century king dynasty treaty colonial independence ancient medieval",
+
+    "Economics":
+    "market demand supply inflation gdp trade price cost profit economy fiscal",
+
+    "English":
+    "grammar poem novel essay author literature verb noun sentence character theme",
+
+    "Java":
+    "java class object thread execution isalive join method program exception inheritance interface",
+
+    "General":
+    ""
+
+};
+
+
+function fillSubjects(){
+
+    var html="";
+
+
+    Object.keys(subjects).forEach(
+        function(subject){
+
+            html+=
+                "<option value=\""+
+                escapeHTML(subject)+
+                "\">"+
+                escapeHTML(subject)+
+                "</option>";
+
+        }
+    );
+
+
+    $("subjectSelect").innerHTML=html;
+
+}
+
+
+/* =========================================================
+   SUBJECT DETECTION
+========================================================= */
+
+var stopWords=[
+    "the","and","that","this","with",
+    "from","have","will","into","which",
+    "their","they","about","also","are",
+    "was","were","for","not","can",
+    "such","each","been","being","more",
+    "than","then","them","these","those",
+    "when","where","what","while","using",
+    "used","uses","your","you","our",
+    "one","has","had","may","how","why"
+];
+
+
+function analyzeText(text){
+
+    var words=
+        text
+        .toLowerCase()
+        .match(/[a-z]{3,}/g)||[];
+
+
+    var frequency={};
+
+
+    words.forEach(
+        function(word){
+
+            frequency[word]=
+                (frequency[word]||0)+1;
+
+        }
+    );
+
+
+    var best="General";
+    var bestScore=0;
+
+
+    Object.keys(subjects).forEach(
+        function(subject){
+
+            if(subject==="General"){
+                return;
+            }
+
+
+            var keywords=
+                subjects[subject]
+                .split(" ");
+
+
+            var score=0;
+
+
+            keywords.forEach(
+                function(keyword){
+
+                    score+=
+                        frequency[keyword]||0;
+
+                }
+            );
+
+
+            if(score>bestScore){
+
+                bestScore=score;
+                best=subject;
+
+            }
+
+        }
+    );
+
+
+    var topics=
+        Object.keys(frequency)
+        .filter(
+            function(word){
+
+                return(
+                    word.length>4 &&
+                    stopWords.indexOf(word)===-1
+                );
+
+            }
+        )
+        .sort(
+            function(a,b){
+
+                return frequency[b]-frequency[a];
+
+            }
+        )
+        .slice(0,5);
+
+
+    return{
+        subject:best,
+        topics:topics
+    };
+
+}
+
+
+function detectSubject(){
+
+    var text=
+        $("result").value.trim();
+
+
+    if(!text){
+
+        $("detect").style.display="none";
+
+        return;
+
+    }
+
+
+    var result=
+        analyzeText(text);
+
+
+    currentSubject=
+        result.subject;
+
+
+    $("subjectSelect").value=
+        result.subject;
+
+
+    $("topicTags").innerHTML=
+        result.topics
+        .map(
+            function(topic){
+
+                return(
+                    '<span class="tag">#'+
+                    escapeHTML(topic)+
+                    '</span>'
+                );
+
+            }
+        )
+        .join("");
+
+
+    $("detect").style.display="block";
+
+}
+
+
+function changeSubject(){
+
+    currentSubject=
+        $("subjectSelect").value;
+
+}
+
+
+/* =========================================================
+   IMAGE UPLOAD
+========================================================= */
+
+$("fileInput").addEventListener(
+    "change",
+    function(){
+
+        var file=this.files[0];
+
+
+        if(!file){
+            return;
+        }
+
+
+        if(!file.type.startsWith("image/")){
+
+            showToast(
+                "Please select an image."
+            );
+
+            this.value="";
+
+            return;
+
+        }
+
+
+        var reader=
+            new FileReader();
+
+
+        reader.onload=
+            function(event){
+
+                $("previewImage").src=
+                    event.target.result;
+
+                $("preview").style.display=
+                    "block";
+
+                showToast(
+                    "Image uploaded successfully."
+                );
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+/* =========================================================
+   IMAGE PREPARATION
+========================================================= */
+
+function prepareImage(file){
+
+    return new Promise(
+        function(resolve,reject){
+
+            var image=
+                new Image();
+
+
+            var url=
+                URL.createObjectURL(file);
+
+
+            image.onload=
+                function(){
+
+                    URL.revokeObjectURL(url);
+
+
+                    var maxSize=2200;
+
+
+                    var scale=
+                        Math.min(
+                            1,
+                            maxSize/
+                            Math.max(
+                                image.width,
+                                image.height
+                            )
+                        );
+
+
+                    var width=
+                        Math.round(
+                            image.width*scale
+                        );
+
+
+                    var height=
+                        Math.round(
+                            image.height*scale
+                        );
+
+
+                    var canvas=
+                        document.createElement(
+                            "canvas"
+                        );
+
+
+                    canvas.width=width;
+                    canvas.height=height;
+
+
+                    var ctx=
+                        canvas.getContext("2d");
+
+
+                    ctx.fillStyle="#ffffff";
+
+                    ctx.fillRect(
+                        0,
+                        0,
+                        width,
+                        height
+                    );
+
+
+                    ctx.drawImage(
+                        image,
+                        0,
+                        0,
+                        width,
+                        height
+                    );
+
+
+                    resolve(canvas);
+
+                };
+
+
+            image.onerror=
+                function(){
+
+                    URL.revokeObjectURL(url);
+
+                    reject(
+                        new Error(
+                            "Unable to load image."
+                        )
+                    );
+
+                };
+
+
+            image.src=url;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   OCR
+========================================================= */
+
+async function extractText(){
+
+    var file=
+        $("fileInput").files[0];
+
+
+    if(!file){
+
+        showToast(
+            "Please upload an image first."
+        );
+
+        return;
+
+    }
+
+
+    var button=
+        $("extractBtn");
+
+
+    button.disabled=true;
+
+
+    $("status").style.display="block";
+
+    $("result").value="";
+
+
+    try{
+
+        $("status").textContent=
+            "📖 Preparing image...";
+
+
+        var canvas=
+            await prepareImage(file);
+
+
+        $("status").textContent=
+            "🔍 OCR is reading the handwriting...";
+
+
+        var worker=
+            await Tesseract.createWorker(
+                "eng",
+                1,
+                {
+                    logger:function(message){
+
+                        if(message.status){
+
+                            var percent="";
+
+
+                            if(
+                                typeof message.progress===
+                                "number"
+                            ){
+
+                                percent=
+                                    " "+
+                                    Math.round(
+                                        message.progress*100
+                                    )+
+                                    "%";
+
+                            }
+
+
+                            $("status").textContent=
+                                "🔍 "+
+                                message.status+
+                                percent;
+
+                        }
+
+                    }
+                }
+            );
+
+
+        try{
+
+            var result=
+                await worker.recognize(
+                    canvas
+                );
+
+
+            var text=
+                (
+                    result.data.text||
+                    ""
+                ).trim();
+
+
+            if(!text){
+
+                showToast(
+                    "No text was detected. Try a clearer image."
+                );
+
+                return;
+
+            }
+
+
+            $("result").value=text;
+
+            detectSubject();
+
+
+            showToast(
+                "✅ Text extracted successfully."
+            );
+
+
+        }finally{
+
+            await worker.terminate();
+
+        }
+
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "OCR error: "+
+            error.message
+        );
+
+
+    }finally{
+
+        $("status").style.display="none";
+
+        button.disabled=false;
+
+    }
+
+}
+
+
+/* =========================================================
+   EDITOR
+========================================================= */
+
+$("result").addEventListener(
+    "input",
+    function(){
+
+        detectSubject();
+
+    }
+);
+
+
+/* =========================================================
+   SAVE NOTE
+========================================================= */
+
+function saveNote(){
+
+    if(!currentUser){
+
+        showToast(
+            "Please login first."
+        );
+
+        return;
+
+    }
+
+
+    var text=
+        $("result").value.trim();
+
+
+    if(!text){
+
+        showToast(
+            "There is no extracted text to save."
+        );
+
+        return;
+
+    }
+
+
+    var analysis=
+        analyzeText(text);
+
+
+    var subject=
+        $("subjectSelect").value||
+        analysis.subject;
+
+
+    var firstLine=
+        text
+        .split("\n")
+        .find(
+            function(line){
+                return line.trim();
+            }
+        );
+
+
+    var title=
+        (
+            firstLine||
+            "Untitled Note"
+        )
+        .trim()
+        .slice(0,60);
+
+
+    var note={
+
+        id:Date.now(),
+
+        title:title,
+
+        subject:subject,
+
+        topics:analysis.topics,
+
+        text:text,
+
+        date:new Date().toISOString(),
+
+        wordCount:
+            text
+            .split(/\s+/)
+            .filter(Boolean)
+            .length
+
+    };
+
+
+    notes.unshift(note);
+
+
+    saveDatabase();
+
+    renderNotes();
+
+
+    showToast(
+        "💾 Note saved successfully."
+    );
+
+}
+
+
+/* =========================================================
+   RENDER NOTES
+========================================================= */
+
+function renderNotes(){
+
+    var grid=
+        $("notesGrid");
+
+
+    if(!notes.length){
+
+        grid.innerHTML=`
+            <div class="empty">
+
+                📭 No notes saved yet.
+
+                <br>
+
+                Upload a handwritten note,
+                extract the text and press
+                <b>Save</b>.
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grid.innerHTML=
+        notes
+        .map(
+            function(note){
+
+                return`
+
+                <div class="note">
+
+                    <div class="note-icon">
+                        📘
+                    </div>
+
+
+                    <h3>
+                        ${escapeHTML(note.title)}
+                    </h3>
+
+
+                    <p class="note-text">
+
+                        ${escapeHTML(
+                            note.text
+                            .replace(/\s+/g," ")
+                            .slice(0,180)
+                        )}
+
+                        ${
+                            note.text.length>180
+                            ? "..."
+                            : ""
+                        }
+
+                    </p>
+
+
+                    <div>
+
+                        <span class="tag subject">
+                            ${escapeHTML(note.subject)}
+                        </span>
+
+                        ${
+                            (note.topics||[])
+                            .slice(0,3)
+                            .map(
+                                function(topic){
+
+                                    return`
+                                    <span class="tag">
+                                        #${escapeHTML(topic)}
+                                    </span>
+                                    `;
+
+                                }
+                            )
+                            .join("")
+                        }
+
+                    </div>
+
+
+                    <span class="note-date">
+
+                        ${new Date(note.date)
+                            .toLocaleString()}
+
+                        ·
+
+                        ${note.wordCount}
+                        words
+
+                    </span>
+
+
+                    <div class="note-actions">
+
+                        <button
+                            onclick="openNote(${note.id})">
+
+                            Open
+
+                        </button>
+
+
+                        <button
+                            onclick="deleteNote(${note.id})"
+                            class="danger">
+
+                            🗑️
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+/* =========================================================
+   OPEN NOTE
+========================================================= */
+
+function openNote(id){
+
+    var note=
+        notes.find(
+            function(item){
+                return item.id===id;
+            }
+        );
+
+
+    if(!note){
+        return;
+    }
+
+
+    $("result").value=
+        note.text;
+
+
+    currentSubject=
+        note.subject;
+
+
+    $("subjectSelect").value=
+        note.subject;
+
+
+    detectSubject();
+
+
+    $("digitizer")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+
+
+    showToast(
+        "Note opened."
+    );
+
+}
+
+
+/* =========================================================
+   DELETE NOTE
+========================================================= */
+
+function deleteNote(id){
+
+    if(
+        !confirm(
+            "Are you sure you want to delete this note?"
+        )
+    ){
+        return;
+    }
+
+
+    notes=
+        notes.filter(
+            function(note){
+                return note.id!==id;
+            }
+        );
+
+
+    saveDatabase();
+
+    renderNotes();
+
+
+    showToast(
+        "Note deleted."
+    );
+
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+function copyText(){
+
+    var text=
+        $("result").value.trim();
+
+
+    if(!text){
+
+        showToast(
+            "Nothing to copy."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ){
+
+        navigator.clipboard
+        .writeText(text)
+        .then(
+            function(){
+
+                showToast(
+                    "📋 Text copied."
+                );
+
+            }
+        )
+        .catch(
+            function(){
+
+                fallbackCopy();
+
+            }
+        );
+
+    }else{
+
+        fallbackCopy();
+
+    }
+
+}
+
+
+function fallbackCopy(){
+
+    $("result").select();
+
+    document.execCommand("copy");
+
+    showToast(
+        "📋 Text copied."
+    );
+
+}
+
+
+/* =========================================================
+   TXT DOWNLOAD
+========================================================= */
+
+function downloadText(){
+
+    var text=
+        $("result").value.trim();
+
+
+    if(!text){
+
+        showToast(
+            "Nothing to download."
+        );
+
+        return;
+
+    }
+
+
+    var blob=
+        new Blob(
+            [text],
+            {
+                type:"text/plain"
+            }
+        );
+
+
+    var url=
+        URL.createObjectURL(blob);
+
+
+    var link=
+        document.createElement("a");
+
+
+    link.href=url;
+
+    link.download=
+        "Cr-Power-Note.txt";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================================================
+   JSON DOWNLOAD
+========================================================= */
+
+function downloadJSON(){
+
+    if(!notes.length){
+
+        showToast(
+            "No saved notes to export."
+        );
+
+        return;
+
+    }
+
+
+    var json=
+        JSON.stringify(
+            notes,
+            null,
+            2
+        );
+
+
+    var blob=
+        new Blob(
+            [json],
+            {
+                type:"application/json"
+            }
+        );
+
+
+    var url=
+        URL.createObjectURL(blob);
+
+
+    var link=
+        document.createElement("a");
+
+
+    link.href=url;
+
+    link.download=
+        "Cr-Power-Notes.json";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(url);
+
+
+    showToast(
+        "📦 JSON file downloaded."
+    );
+
+}
+
+
+/* =========================================================
+   TEXT TO SPEECH
+========================================================= */
+
+function speakText(){
+
+    var text=
+        $("result").value.trim();
+
+
+    if(!text){
+
+        showToast(
+            "Nothing to read."
+        );
+
+        return;
+
+    }
+
+
+    if(!window.speechSynthesis){
+
+        showToast(
+            "Text-to-speech is not supported."
+        );
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    var speech=
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    speech.rate=.9;
+
+
+    speechSynthesis.speak(
+        speech
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearEditor(){
+
+    $("fileInput").value="";
+
+    $("preview").style.display="none";
+
+    $("previewImage").src="";
+
+    $("result").value="";
+
+    $("detect").style.display="none";
+
+    $("status").style.display="none";
+
+    currentSubject="General";
+
+    $("subjectSelect").value="General";
+
+
+    showToast(
+        "Editor cleared."
+    );
+
+}
+
+
+/* =========================================================
+   CHATBOT
+========================================================= */
+
+var chatOpened=false;
+
+
+function toggleChat(){
+
+    var windowChat=
+        $("chatWindow");
+
+
+    windowChat.classList.toggle(
+        "open"
+    );
+
+
+    if(
+        windowChat.classList.contains("open") &&
+        !chatOpened
+    ){
+
+        chatOpened=true;
+
+
+        addChatMessage(
+            "Hi! 👋 I'm NoteAI.\n\n"+
+            "I am a basic offline study assistant. "+
+            "I can explain NoteAI, OCR, saved notes and "+
+            "basic features.",
+            false
+        );
+
+    }
+
+}
+
+
+function addChatMessage(text,user){
+
+    var message=
+        document.createElement("div");
+
+
+    message.className=
+        "message"+
+        (
+            user
+            ? " user"
+            : ""
+        );
+
+
+    message.textContent=text;
+
+
+    $("chatMessages")
+        .appendChild(message);
+
+
+    $("chatMessages").scrollTop=
+        $("chatMessages").scrollHeight;
+
+}
+
+
+/* =========================================================
+   CHAT ANSWERS
+========================================================= */
+
+function chatbotAnswer(question){
+
+    var q=
+        question
+        .toLowerCase()
+        .trim();
+
+
+    if(
+        /^(hi|hello|hey|hii)\b/.test(q)
+    ){
+
+        return(
+            "Hello! 👋 How can I help you?"
+        );
+
+    }
+
+
+    if(
+        q.includes("what is noteai") ||
+        q.includes("about noteai")
+    ){
+
+        return(
+            "NoteAI is a handwriting notes digitizer. "+
+            "It allows students to upload handwritten notes, "+
+            "extract text using OCR, edit the result and save "+
+            "their notes digitally."
+        );
+
+    }
+
+
+    if(
+        q.includes("what is ocr") ||
+        q.includes("ocr")
+    ){
+
+        return(
+            "OCR means Optical Character Recognition. "+
+            "It detects text inside an image and converts "+
+            "it into editable digital text."
+        );
+
+    }
+
+
+    if(
+        q.includes("how to use") ||
+        q.includes("how does it work")
+    ){
+
+        return(
+            "The process is simple:\n\n"+
+            "1. Upload a handwritten image.\n"+
+            "2. Click Extract Text.\n"+
+            "3. OCR reads the image.\n"+
+            "4. Check and edit the text.\n"+
+            "5. Select the subject.\n"+
+            "6. Click Save.\n"+
+            "7. The note is stored locally."
+        );
+
+    }
+
+
+    if(
+        q.includes("how many notes") ||
+        q.includes("my notes") ||
+        q.includes("saved notes")
+    ){
+
+        return(
+            "You currently have "+
+            notes.length+
+            " saved note"+
+            (
+                notes.length===1
+                ? ""
+                : "s"
+            )+
+            "."
+        );
+
+    }
+
+
+    if(
+        q.includes("subjects") ||
+        q.includes("which subject")
+    ){
+
+        if(!notes.length){
+
+            return(
+                "You don't have any saved notes yet."
+            );
+
+        }
+
+
+        var list=[];
+
+
+        notes.forEach(
+            function(note){
+
+                if(
+                    list.indexOf(note.subject)===-1
+                ){
+
+                    list.push(note.subject);
+
+                }
+
+            }
+        );
+
+
+        return(
+            "Your saved note subjects are:\n\n"+
+            list
+            .map(
+                function(subject){
+                    return "• "+subject;
+                }
+            )
+            .join("\n")
+        );
+
+    }
+
+
+    if(
+        q.includes("latest") ||
+        q.includes("last note") ||
+        q.includes("recent note")
+    ){
+
+        if(!notes.length){
+
+            return(
+                "There are no saved notes yet."
+            );
+
+        }
+
+
+        var latest=notes[0];
+
+
+        return(
+            "Your latest note is:\n\n"+
+            "Title: "+
+            latest.title+
+            "\n"+
+            "Subject: "+
+            latest.subject+
+            "\n\n"+
+            latest.text.slice(0,500)
+        );
+
+    }
+
+
+    if(
+        q.includes("where") &&
+        (
+            q.includes("stored") ||
+            q.includes("save")
+        )
+    ){
+
+        return(
+            "Your notes are stored locally in your browser "+
+            "using localStorage. Each user has a separate "+
+            "notes collection."
+        );
+
+    }
+
+
+    if(q.includes("json")){
+
+        return(
+            "JSON is a structured text format used to store "+
+            "data. Cr Power can export your saved notes as "+
+            "a JSON file."
+        );
+
+    }
+
+
+    if(q.includes("java")){
+
+        return(
+            "Java is a programming language used to build "+
+            "applications, backend systems and many other "+
+            "software projects."
+        );
+
+    }
+
+
+    if(
+        q.includes("help") ||
+        q.includes("features")
+    ){
+
+        return(
+            "Cr Power features include:\n\n"+
+            "• User registration\n"+
+            "• User login\n"+
+            "• Handwritten image upload\n"+
+            "• OCR text extraction\n"+
+            "• Subject detection\n"+
+            "• Topic detection\n"+
+            "• Note saving\n"+
+            "• User-specific local storage\n"+
+            "• JSON export\n"+
+            "• TXT download\n"+
+            "• Text-to-speech\n"+
+            "• Offline chatbot"
+        );
+
+    }
+
+
+    return(
+        "I am a basic offline chatbot, so I can answer "+
+        "questions about Cr Power, OCR, saved notes, JSON "+
+        "storage and its features. Try asking: "+
+        "\"What is OCR?\""
+    );
+
+}
+
+
+function sendChat(){
+
+    var input=
+        $("chatInput");
+
+
+    var question=
+        input.value.trim();
+
+
+    if(!question){
+        return;
+    }
+
+
+    addChatMessage(
+        question,
+        true
+    );
+
+
+    input.value="";
+
+
+    setTimeout(
+        function(){
+
+            var answer=
+                chatbotAnswer(
+                    question
+                );
+
+
+            addChatMessage(
+                answer,
+                false
+            );
+
+        },
+        250
+    );
+
+}
+
+
+function quickQuestion(question){
+
+    if(
+        !$("chatWindow")
+        .classList
+        .contains("open")
+    ){
+
+        toggleChat();
+
+    }
+
+
+    $("chatInput").value=
+        question;
+
+
+    sendChat();
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+fillSubjects();
+
+checkSession();
+
+</script>
+
+</body>
+</html>
